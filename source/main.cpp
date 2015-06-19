@@ -5,7 +5,7 @@
 #include <math.h>
 #include <3ds.h>
 #include <sf2d.h>
-//#include <iostream>
+#include <iostream>
 /*extern const struct {
   unsigned int 	 width;
   unsigned int 	 height;
@@ -52,14 +52,14 @@ struct personatge{
 //tipus de blocs: 0-aire 1-bloc normal 2-bloc trencat 3-terra_1 4-terra_2... 
 int main()
 {
-	//consoleInit(GFX_BOTTOM, NULL);
+	
 	// Set the random seed based on the time
 	srand(time(NULL));
     
 	sf2d_set_vblank_wait(true);
 	sf2d_init();
 	sf2d_set_clear_color(RGBA8(51, 204, 255, 0xFF));
-
+    consoleInit(GFX_BOTTOM, NULL);
 	//sf2d_texture *tex1 = sf2d_create_texture_mem_RGBA8(dice_img.pixel_data, dice_img.width, dice_img.height, TEXFMT_RGBA8, SF2D_PLACE_RAM);
 	u32 held;	
     const int ampladamapa=25*4,alturamapa=15, ampladaestandar=16, alturaestandar=16; 
@@ -129,21 +129,23 @@ int main()
         
         //gravetat();        
 		
-		float tempy=(marlo.posy+marlo.altura+1)/16,tempx=marlo.posx/16;
+		float tempy=(marlo.posy+2*marlo.altura+1)/16,tempx=marlo.posx/16;
     	int xblocinferior=(int)tempx,yblocinferior=(int)tempy;
     	if(!mapa[xblocinferior][yblocinferior]->solid){
 			//std::cout<<"Gravity YES"<<std::endl;
 			marlo.posy=marlo.posy+((testaccel/2)*(frames*frames));
+			frames++;
     	}
 		else frames=0;
 		
 		hidScanInput();		
 		held = hidKeysHeld();
 		
-		/*
+		
 		if (held & KEY_X) {
-			saltar();
+			marlo.posy-=marlo.altura*3;
 		} 
+		/*
 		if (held & KEY_Y) {
 			correr();
 		}*/
@@ -158,7 +160,7 @@ int main()
 		} 	
 		if (held & KEY_UP) {
 			testaccel+=0.1;
-		} 
+	    } 
 		if (held & KEY_DOWN) {
 			testaccel-=0.1;
 		} 
