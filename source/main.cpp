@@ -38,14 +38,14 @@ void gravetat(extern personatge &marlo){
 struct personatge{
 	s16 posx,posy;  //#nofloat
 	float velx,vely,acelx,acely;
-	s8 amplada,altura;
+	u8 amplada,altura;
 	bool saltant;
 	//textura
 	};
 	
 	struct solid{ //creem variable de tipus solid
 		s32 posx,posy; //aixo cal?
-		s8 tipus,altura,amplada;
+		u8 tipus,altura,amplada;
 		bool solid;
 		//textura
 	};
@@ -61,7 +61,7 @@ int main()
 	sf2d_set_clear_color(RGBA8(51, 204, 255, 0xFF));
     consoleInit(GFX_BOTTOM, NULL);
 	//sf2d_texture *tex1 = sf2d_create_texture_mem_RGBA8(dice_img.pixel_data, dice_img.width, dice_img.height, TEXFMT_RGBA8, SF2D_PLACE_RAM);
-	u32 held;	
+	u32 kheld, kdown;	
     const int ampladamapa=25*4,alturamapa=15, ampladaestandar=16, alturaestandar=16; 
 	
 	solid *mapa[ampladamapa+1][alturamapa+1];
@@ -125,46 +125,48 @@ int main()
 		
 	mapa[10][alturamapa-8]=&bloc_normal;
 	
-	while (aptMainLoop()) {
-        
-        //gravetat();        
-		
+	while (aptMainLoop()) {    
+				
 		float tempy=(marlo.posy+2*marlo.altura+1)/16,tempx=marlo.posx/16;
     	int xblocinferior=(int)tempx,yblocinferior=(int)tempy;
     	if(!mapa[xblocinferior][yblocinferior]->solid){
 			//std::cout<<"Gravity YES"<<std::endl;
 			marlo.posy=marlo.posy+((testaccel/2)*(frames*frames));
+			if(marlo.posy>240){marlo.posy=0; marlo.posx=0;}
 			frames++;
     	}
 		else frames=0;
 		
 		hidScanInput();		
-		held = hidKeysHeld();
+		kheld = hidKeysHeld();
+		kdown = hidKeysDown();
 		
+		if(frames)std::cout<<testaccel<<std::endl;
 		
-		if (held & KEY_X) {
-			marlo.posy-=marlo.altura*3;
+		if (kdown & KEY_X) {
+			marlo.posy-=marlo.altura*2;
 		} 
 		/*
-		if (held & KEY_Y) {
+		if (kheld & KEY_Y) {
 			correr();
 		}*/
-		if (held & KEY_START) {
+		if (kheld & KEY_START) {
 			break;
 		}
-        if (held & KEY_RIGHT) {
-			marlo.posx+=1;
+        if (kheld & KEY_RIGHT) {
+			marlo.posx+=3;
 		} 
-		if (held & KEY_LEFT) {
-			marlo.posx-=1;
+		if (kheld & KEY_LEFT) {
+			marlo.posx-=3;
 		} 	
-		if (held & KEY_UP) {
+		if (kdown & KEY_UP) {
 			testaccel+=0.1;
 	    } 
-		if (held & KEY_DOWN) {
+		if (kdown & KEY_DOWN) {
 			testaccel-=0.1;
 		} 
-		        
+		
+        //if(marlo.posy>=240){}        
 		//renderitzar
 		sf2d_start_frame(GFX_TOP, GFX_LEFT);
 		
