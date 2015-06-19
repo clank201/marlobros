@@ -1,4 +1,4 @@
-main.o: c:/Users/Markus/Desktop/sf2dlib-master/marlobros/source/main.cpp \
+main.o: c:/Users/Markus/Documents/GitHub/marlobros/source/main.cpp \
  c:/devkitPro/libctru/include/3ds.h \
  c:/devkitPro/libctru/include/3ds/types.h \
  c:/devkitPro/libctru/include/3ds/svc.h \

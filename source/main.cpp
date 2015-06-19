@@ -5,7 +5,7 @@
 #include <math.h>
 #include <3ds.h>
 #include <sf2d.h>
-
+//#include <iostream>
 /*extern const struct {
   unsigned int 	 width;
   unsigned int 	 height;
@@ -52,6 +52,7 @@ struct personatge{
 //tipus de blocs: 0-aire 1-bloc normal 2-bloc trencat 3-terra_1 4-terra_2... 
 int main()
 {
+	//consoleInit(GFX_BOTTOM, NULL);
 	// Set the random seed based on the time
 	srand(time(NULL));
     
@@ -92,7 +93,7 @@ int main()
 	terra_1.solid=true;
 	//textura
 	
-	extern personatge marlo;
+	personatge marlo;
 	marlo.amplada=ampladaestandar;
 	marlo.altura=32;
 	//textura
@@ -131,6 +132,7 @@ int main()
 		float tempy=(marlo.posy+marlo.altura+1)/16,tempx=marlo.posx/16;
     	int xblocinferior=(int)tempx,yblocinferior=(int)tempy;
     	if(!mapa[xblocinferior][yblocinferior]->solid){
+			//std::cout<<"Gravity YES"<<std::endl;
 			marlo.posy=marlo.posy+((testaccel/2)*(frames*frames));
     	}
 		else frames=0;
@@ -155,17 +157,17 @@ int main()
 			marlo.posx-=1;
 		} 	
 		if (held & KEY_UP) {
-			marlo.posy+=1;
+			testaccel+=0.1;
 		} 
 		if (held & KEY_DOWN) {
-			marlo.posy-=1;
+			testaccel-=0.1;
 		} 
 		        
 		//renderitzar
 		sf2d_start_frame(GFX_TOP, GFX_LEFT);
 		
 		for (int i = 0; i != alturamapa; i++){ //y
-			for (int j = 0; j != 25; j++){ //!Aquet 25 hauria de ser la zona que la camera abasteix
+			for (int j = 0; j != 25; j++){ //!Auet 25 hauria de ser la zona que la camera abasteix
 				if(mapa[j][i]->tipus) sf2d_draw_rectangle(j*16,i*16,mapa[j][i]->amplada,mapa[j][i]->altura, RGBA8(204, 102, 0, 0xFF));			
 			}
 		}
