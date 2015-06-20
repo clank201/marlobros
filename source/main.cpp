@@ -6,26 +6,23 @@
 #include <3ds.h>
 #include <sf2d.h>
 #include <iostream>
+
+#define my marlo.posy
+#define mx marlo.posx
+#define escriu std::cout<<
+#define filinea <<std::endl
+
 /*extern const struct {
   unsigned int 	 width;
   unsigned int 	 height;
   unsigned int 	 bytes_per_pixel;
   unsigned char	 pixel_data[];
 } citra_img;
-
-extern const struct {
-  unsigned int 	 width;
-  unsigned int 	 height;
-  unsigned int 	 bytes_per_pixel;
-  unsigned char	 pixel_data[];
-} dice_img;
 */
 
-s32 frames=0;
-float testaccel=2;//no feu aixo a casa nens!
 /*
 void caiguda(){
-	marlo.posy=marlo.posy+((testaccel/2)*(frames*frames));
+	marlo.posy=marlo.posy+((marlo.acely/2)*(frames*frames));
 }
 
 void gravetat(extern personatge &marlo){
@@ -34,7 +31,8 @@ void gravetat(extern personatge &marlo){
 	if(!map[xblocinferior][yblocinferior]->solid)caiguda();
 	else frames=0;
 }
-/*/
+*/
+
 struct personatge{
 	s16 posx,posy;  //#nofloat
 	float velx,vely,acelx,acely;
@@ -50,19 +48,19 @@ struct personatge{
 		//textura
 	};
 //tipus de blocs: 0-aire 1-bloc normal 2-bloc trencat 3-terra_1 4-terra_2... 
-int main()
-{
-	
+
+int main(){
 	// Set the random seed based on the time
-	srand(time(NULL));
-    
-	sf2d_set_vblank_wait(true);
+	//srand(time(NULL));
+    sf2d_set_vblank_wait(true);
 	sf2d_init();
 	sf2d_set_clear_color(RGBA8(51, 204, 255, 0xFF));
     consoleInit(GFX_BOTTOM, NULL);
 	//sf2d_texture *tex1 = sf2d_create_texture_mem_RGBA8(dice_img.pixel_data, dice_img.width, dice_img.height, TEXFMT_RGBA8, SF2D_PLACE_RAM);
+	
 	u32 kheld, kdown;	
     const int ampladamapa=25*4,alturamapa=15, ampladaestandar=16, alturaestandar=16; 
+	u32 frames=0;
 	
 	solid *mapa[ampladamapa+1][alturamapa+1];
 	
@@ -98,9 +96,9 @@ int main()
 	marlo.altura=32;
 	//textura
 	
-	personatge marlo_correr;
-	marlo_correr.amplada=ampladaestandar;
-	marlo_correr.altura=32;
+	//personatge marlo_correr;
+	//marlo_correr.amplada=ampladaestandar;
+	//marlo_correr.altura=32;
 	//textura
 	
 	/*personatge marlo_salt;
@@ -110,6 +108,7 @@ int main()
 
 	marlo.posx=5;
 	marlo.posy=0;
+	marlo.acely=1.5;
 			
 	for (int i = 0; i != alturamapa; i++){
 		for (int j = 0; j != ampladamapa; j++){
@@ -125,14 +124,19 @@ int main()
 		
 	mapa[10][alturamapa-8]=&bloc_normal;
 	
+	//posicio correcte: if(mx>=0 && mx<=400-16 && my>=0 && my<=240-32)
 	while (aptMainLoop()) {    
-				
-		float tempy=(marlo.posy+2*marlo.altura+1)/16,tempx=marlo.posx/16;
-    	int xblocinferior=(int)tempx,yblocinferior=(int)tempy;
-    	if(!mapa[xblocinferior][yblocinferior]->solid){
-			//std::cout<<"Gravity YES"<<std::endl;
-			marlo.posy=marlo.posy+((testaccel/2)*(frames*frames));
-			if(marlo.posy>240){marlo.posy=0; marlo.posx=0;}
+	    
+	if(mx<0 or mx<400-16 or my<0 or my>=240-33) {
+	escriu "Warning: marlo out of bounds" filinea;
+	my=0; mx=15*4;}
+	
+		int xblocinferior=(marlo.posx-1)/16, yblocinferior=(marlo.posy+marlo.altura+1)/16;
+		if(!mapa[xblocinferior][yblocinferior]->solid){
+		  u16 tempy=marlo.posy+((marlo.acely/2)*(frames*frames));
+		  if (tempy>16*yblocinferior){my=16*yblocinferior;}
+		  else marlo.posy=tempy;
+			//if(marlo.posy>240){marlo.posy=0; marlo.posx=16*5;}
 			frames++;
     	}
 		else frames=0;
@@ -141,7 +145,7 @@ int main()
 		kheld = hidKeysHeld();
 		kdown = hidKeysDown();
 		
-		if(frames)std::cout<<testaccel<<std::endl;
+		if(frames)std::cout<<marlo.acely<<std::endl;
 		
 		if (kdown & KEY_X) {
 			marlo.posy-=marlo.altura*2;
@@ -160,13 +164,12 @@ int main()
 			marlo.posx-=3;
 		} 	
 		if (kdown & KEY_UP) {
-			testaccel+=0.1;
+			marlo.acely+=0.1;
 	    } 
 		if (kdown & KEY_DOWN) {
-			testaccel-=0.1;
+			marlo.acely-=0.1;
 		} 
-		
-        //if(marlo.posy>=240){}        
+		       
 		//renderitzar
 		sf2d_start_frame(GFX_TOP, GFX_LEFT);
 		
@@ -177,7 +180,7 @@ int main()
 		}
 		
 		sf2d_draw_rectangle(marlo.posx,marlo.posy,marlo.amplada,marlo.altura, RGBA8(51, 51, 255, 0xFF));
-		
+	
 		sf2d_end_frame();
 
 		sf2d_swapbuffers();
