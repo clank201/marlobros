@@ -127,7 +127,7 @@ int main(){
 	//posicio correcte: if(mx>=0 && mx<=400-16 && my>=0 && my<=240-32)
 	while (aptMainLoop()) {    
 	    
-	if(mx<0 or mx<400-16 or my<0 or my>=240-33) {
+	if(mx<0 or mx>=400-16 or my<0 or my>=240-33) {
 	escriu "Warning: marlo out of bounds" filinea;
 	my=0; mx=15*4;}
 	
